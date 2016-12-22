@@ -17,11 +17,24 @@ class Board
     grid[row][col] = val
   end
 
+  def reveal_bombs
+    grid.each do |row|
+      row.each do |tile|
+        if tile.is_bomb? && won?
+          tile.flag
+        elsif tile.is_bomb?
+          tile.reveal
+        end
+      end
+    end
+  end
+
+
   def reveal(pos)
     unless self[pos].revealed
       self[pos].reveal
       if self[pos].empty?
-        get_neighbors(pos).each {|neighbor| reveal(neighbor)}
+        get_neighbors(pos).each { |neighbor| reveal(neighbor) }
       end
     end
     self[pos].is_bomb?
