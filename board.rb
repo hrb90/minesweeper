@@ -89,8 +89,9 @@ class Board
   end
 
   def render
-    grid.each do |row|
-      puts row.join(" ")
+    puts "  #{(0..8).to_a.join(" ")}"
+    grid.each_with_index do |row, i|
+      puts "#{i} #{row.join(" ")}"
     end
   end
 end
