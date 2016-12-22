@@ -43,6 +43,7 @@ class Game
       board.render
       stepped_on_bomb = take_turn
     end
+    board.reveal_bombs
     board.render
     if stepped_on_bomb
       puts "Sorry, you lose!"
