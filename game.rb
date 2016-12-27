@@ -1,26 +1,19 @@
 require_relative 'board'
+require_relative 'player'
 
 class Game
-
-  ACTIONS = {
-  "flag" => :flag,
-  "f" => :flag,
-  "reveal" => :reveal,
-  "r" => :reveal,
-  "unflag" => :unflag,
-  "u" => :unflag
-
-  }
   attr_reader :board
 
-  def initialize
+  def initialize(player = nil)
     @board = Board.new
+    @player = player.nil? ? HumanPlayer.new : player
   end
 
   def take_turn
     while true
-      pos = get_pos
-      action = get_action
+      # giving too much information to the player here
+      # i alone can fix!
+      pos, action = @player.get_move(board)
 
       if action == :flag
         return board.flag(pos)
@@ -32,16 +25,6 @@ class Game
 
       puts "Sorry, try again."
     end
-  end
-
-  def get_pos
-    puts "Enter a position."
-    gets.chomp.split(",").map(&:to_i)
-  end
-
-  def get_action
-    puts "Enter 'reveal', 'flag', or 'unflag'."
-    ACTIONS[gets.chomp]
   end
 
   def play
@@ -60,3 +43,5 @@ class Game
     end
   end
 end
+
+Game.new.play
