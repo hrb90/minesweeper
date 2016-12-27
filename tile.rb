@@ -63,4 +63,10 @@ class Tile
       :cyan
     end
   end
+
+  def to_symbol
+    return :f if flagged
+    return :o unless revealed
+    value
+  end
 end
