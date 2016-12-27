@@ -11,9 +11,7 @@ class Game
 
   def take_turn
     while true
-      # giving too much information to the player here
-      # i alone can fix!
-      pos, action = @player.get_move(board)
+      pos, action = @player.get_move(board.get_grid)
 
       if action == :flag
         return board.flag(pos)
@@ -43,5 +41,3 @@ class Game
     end
   end
 end
-
-Game.new.play

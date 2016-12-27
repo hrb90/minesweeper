@@ -18,7 +18,7 @@ class Player
 end
 
 class HumanPlayer < Player
-  def get_move(board)
+  def get_move(grid)
     pos = get_pos
     action = get_action
     [pos, action]
