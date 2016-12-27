@@ -29,7 +29,7 @@ class Board
     end
   end
 
-
+  # reveal, flag, and unflag all return whether the game is over
   def reveal(pos)
     unless self[pos].revealed
       self[pos].reveal
@@ -42,6 +42,11 @@ class Board
 
   def flag(pos)
     self[pos].flag
+    false
+  end
+
+  def unflag(pos)
+    self[pos].unflag
     false
   end
 

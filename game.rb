@@ -6,7 +6,9 @@ class Game
   "flag" => :flag,
   "f" => :flag,
   "reveal" => :reveal,
-  "r" => :reveal
+  "r" => :reveal,
+  "unflag" => :unflag,
+  "u" => :unflag
 
   }
   attr_reader :board
@@ -16,13 +18,19 @@ class Game
   end
 
   def take_turn
-    pos = get_pos
-    action = get_action
+    while true
+      pos = get_pos
+      action = get_action
 
-    if action == :flag
-      board.flag(pos)
-    else
-      board.reveal(pos)
+      if action == :flag
+        return board.flag(pos)
+      elsif action == :unflag
+        return board.unflag(pos)
+      elsif action == :reveal
+        return board.reveal(pos)
+      end
+
+      puts "Sorry, try again."
     end
   end
 
@@ -32,7 +40,7 @@ class Game
   end
 
   def get_action
-    puts "Enter 'flag' or 'reveal'."
+    puts "Enter 'reveal', 'flag', or 'unflag'."
     ACTIONS[gets.chomp]
   end
 
