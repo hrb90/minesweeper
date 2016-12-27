@@ -10,11 +10,15 @@ class Tile
 
   def reveal
     @revealed = true
-    @flagged = false
+    unflag
   end
 
   def flag
     @flagged = true
+  end
+
+  def unflag
+    @flagged = false
   end
 
   def empty?
