@@ -52,6 +52,7 @@ class ComputerPlayer < Player
   end
 
   def get_move(grid)
+    sleep(0.5)
     return @move_stack.pop unless @move_stack.empty?
     generate_moves(grid)
     @move_stack.pop
@@ -77,7 +78,6 @@ class ComputerPlayer < Player
   end
 
   def generate_moves(grid)
-    sleep(0.5)
     unrevealed = []
     grid.each_with_index do |row, i|
       row.each_with_index do |tile, j|

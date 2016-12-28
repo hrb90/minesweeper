@@ -1,10 +1,12 @@
 require_relative 'tile'
 
 class Board
-  attr_reader :grid
+  attr_reader :grid, :rows, :cols
 
-  def initialize
-    @grid = Array.new(9) {Array.new(9)}
+  def initialize(rows = 9, cols = 9)
+    @rows =rows
+    @cols = cols
+    @grid = Array.new(rows) {Array.new(cols)}
   end
 
   def [](pos)
@@ -56,13 +58,19 @@ class Board
   end
 
   def populate_bombs
-    tile_values = [true] * 10 + [false] * 71
-    tile_values.shuffle!
+    tile_values = get_tiles
     grid.each_with_index do |row, i|
       row.each_with_index do |pos, j|
         grid[i][j] = Tile.new(tile_values.shift)
       end
     end
+  end
+
+  def get_tiles
+    num_tiles = grid.flatten.length
+    num_bombs = num_tiles / 8
+    num_safe = num_tiles - num_bombs
+    ([true] * num_bombs + [false] * num_safe).shuffle
   end
 
   def populate_counts
@@ -82,7 +90,8 @@ class Board
   end
 
   def valid_pos?(pos)
-    pos.none? { |x| x < 0 || x > 8 }
+    x, y = pos
+    (0...rows).include?(x) && (0...cols).include?(y)
   end
 
   def get_neighbors(pos)
@@ -107,7 +116,7 @@ class Board
   end
 
   def render
-    puts "  #{(0..8).to_a.join(" ")}"
+    puts "  #{(0...cols).to_a.join(" ")}"
     grid.each_with_index do |row, i|
       puts "#{i} #{row.join(" ")}"
     end
