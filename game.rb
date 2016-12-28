@@ -4,8 +4,9 @@ require_relative 'player'
 class Game
   attr_reader :board
 
-  def initialize(player = nil)
-    @board = Board.new
+  def initialize(player = nil, size = [9,9])
+    x, y = size
+    @board = Board.new(x, y)
     @player = player.nil? ? HumanPlayer.new : player
   end
 
@@ -29,6 +30,7 @@ class Game
     board.populate
     stepped_on_bomb = false
     until board.won? || stepped_on_bomb
+      system("clear")
       board.render
       stepped_on_bomb = take_turn
     end
