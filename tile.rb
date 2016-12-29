@@ -4,10 +4,27 @@ class Tile
   attr_accessor :value
   attr_reader :revealed, :flagged
 
+  SYMBOL_TO_TEXT = {:f => "F".colorize(:light_red),
+                    :o => "*".colorize(:black),
+                    :b => "B".colorize(:black),
+                    0 => "_".colorize(:white),
+                    1 => "1".colorize(:blue),
+                    2 => "2".colorize(:green),
+                    3 => "3".colorize(:red),
+                    4 => "4".colorize(:magenta),
+                    5 => "5".colorize(:yellow),
+                    6 => "6".colorize(:cyan),
+                    7 => "7".colorize(:cyan),
+                    8 => "8".colorize(:cyan)}
+
   def initialize(is_bomb)
     @value = is_bomb ? :b : nil
     @revealed = false
     @flagged = false
+  end
+
+  def self.sym_txt(symbol)
+    SYMBOL_TO_TEXT[symbol]
   end
 
   def reveal
@@ -32,41 +49,13 @@ class Tile
   end
 
   def to_s
-    get_string.colorize(get_color)
-  end
-
-  def get_string
-    return "F" if flagged
-    return "*" unless revealed
-    return "_" if empty?
-    return "B" if is_bomb?
-    value.to_s
-  end
-
-  def get_color
-    return :light_red if flagged
-    return :black unless revealed
-    return :white if empty?
-    return :black unless value.is_a?(Fixnum)
-    case value
-    when 1
-      :blue
-    when 2
-      :green
-    when 3
-      :red
-    when 4
-      :magenta
-    when 5
-      :yellow
-    else
-      :cyan
-    end
+    SYMBOL_TO_TEXT[to_symbol]
   end
 
   def to_symbol
     return :f if flagged
     return :o unless revealed
+    return :b if is_bomb?
     value
   end
 end
