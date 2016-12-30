@@ -12,13 +12,14 @@ class Game
 
   def take_turn
     while true
-      pos, action = @player.get_move(board.get_grid)
+      pos, action = @player.get_move(board.public_grid)
 
-      if action == :flag
+      case action
+      when :flag
         return board.flag(pos)
-      elsif action == :unflag
+      when :unflag
         return board.unflag(pos)
-      elsif action == :reveal
+      when :reveal
         return board.reveal(pos)
       end
 

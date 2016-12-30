@@ -1,10 +1,11 @@
 require 'colorize'
 
 class Tile
-  attr_accessor :value
+  attr_accessor :value, :cursor
   attr_reader :revealed, :flagged
 
-  SYMBOL_TO_TEXT = {:f => "F".colorize(:light_red),
+  SYMBOL_TO_TEXT = {:c => " ".colorize(:background => :light_green),
+                    :f => "F".colorize(:light_red),
                     :o => "*".colorize(:black),
                     :b => "B".colorize(:black),
                     0 => "_".colorize(:white),
@@ -21,9 +22,10 @@ class Tile
     @value = is_bomb ? :b : nil
     @revealed = false
     @flagged = false
+    @cursor = false
   end
 
-  def self.sym_txt(symbol)
+  def self.sym_to_txt(symbol)
     SYMBOL_TO_TEXT[symbol]
   end
 
@@ -49,10 +51,11 @@ class Tile
   end
 
   def to_s
-    SYMBOL_TO_TEXT[to_symbol]
+    self.class.sym_to_txt(to_symbol)
   end
 
   def to_symbol
+    return :c if cursor
     return :f if flagged
     return :o unless revealed
     return :b if is_bomb?
