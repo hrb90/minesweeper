@@ -121,9 +121,10 @@ class Board
     end
   end
 
-  def get_grid
+  def public_grid
     grid.map do |row|
       row.map(&:to_symbol)
     end
   end
+
 end

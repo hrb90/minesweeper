@@ -1,3 +1,8 @@
+require 'remedy'
+require_relative 'tile'
+
+include Remedy
+
 class Player
   ACTIONS = {
   "flag" => :flag,
@@ -6,6 +11,13 @@ class Player
   "r" => :reveal,
   "unflag" => :unflag,
   "u" => :unflag
+  }
+
+  DIRECTIONS = {
+    :up => [-1, 0],
+    :down => [1, 0],
+    :left => [0, -1],
+    :right => [0, 1]
   }
 
   def initialize(name=nil)
@@ -19,6 +31,7 @@ end
 
 class HumanPlayer < Player
   def get_move(grid)
+    render(grid)
     pos = get_pos
     action = get_action
     [pos, action]
@@ -32,6 +45,63 @@ class HumanPlayer < Player
   def get_action
     puts "Enter 'reveal', 'flag', or 'unflag'."
     ACTIONS[gets.chomp]
+  end
+end
+
+class CursorPlayer < Player
+  attr_reader :cursor_pos, :input
+
+  def initialize(name=nil)
+    @name = name.nil? ? "Outis" : name
+    @input = Interaction.new
+    @cursor_pos = [0,0]
+  end
+
+  def get_move(grid)
+    render(grid)
+    input.loop do |key|
+      case key.to_s
+      when 'up'
+        move_cursor(grid, :up)
+      when 'down'
+        move_cursor(grid, :down)
+      when 'left'
+        move_cursor(grid, :left)
+      when 'right'
+        move_cursor(grid, :right)
+      when 'f'
+        return [cursor_pos, :flag]
+      when 'u'
+        return [cursor_pos, :unflag]
+      when 'r'
+        return [cursor_pos, :reveal]
+      end
+      render(grid)
+    end
+  end
+
+  def move_cursor(grid, direction)
+    dx, dy = DIRECTIONS[direction]
+    x, y = cursor_pos
+    new_x = x + dx
+    new_x = 0 if new_x < 0
+    new_x = grid.length - 1 if new_x >= grid.length
+    new_y = y + dy
+    new_y = 0 if new_y < 0
+    new_y = grid[0].length - 1 if new_y >= grid[0].length
+    @cursor_pos = [new_x, new_y]
+  end
+
+  def render(grid)
+    system "clear"
+    grid_copy = grid.map(&:dup)
+    unless cursor_pos.nil?
+      x, y = cursor_pos
+      grid_copy[x][y] = :c
+    end
+    grid_copy.each do |row|
+      puts row.map { |x| Tile.sym_to_txt(x) }.join
+    end
   end
 end
 
