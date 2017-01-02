@@ -20,13 +20,11 @@ class Board
   end
 
   def reveal_bombs
-    grid.each do |row|
-      row.each do |tile|
-        if tile.is_bomb? && won?
-          tile.flag
-        elsif tile.is_bomb?
-          tile.reveal
-        end
+    grid.flatten.each do |tile|
+      if tile.is_bomb? && won?
+        tile.flag
+      elsif tile.is_bomb?
+        tile.reveal
       end
     end
   end
@@ -58,19 +56,7 @@ class Board
   end
 
   def populate_bombs
-    tile_values = get_tiles
-    grid.each_with_index do |row, i|
-      row.each_with_index do |pos, j|
-        grid[i][j] = Tile.new(tile_values.shift)
-      end
-    end
-  end
-
-  def get_tiles
-    num_tiles = grid.flatten.length
-    num_bombs = num_tiles / 8
-    num_safe = num_tiles - num_bombs
-    ([true] * num_bombs + [false] * num_safe).shuffle
+    Tile.populate(grid)
   end
 
   def populate_counts
@@ -82,11 +68,7 @@ class Board
   end
 
   def count_bomb_neighbors(pos)
-    count = 0
-    get_neighbors(pos).each do |new_pos|
-      count += 1 if self[new_pos].is_bomb?
-    end
-    count
+    get_neighbors(pos).count { |pos| self[pos].is_bomb? }
   end
 
   def valid_pos?(pos)
@@ -107,18 +89,10 @@ class Board
   end
 
   def won?
-    grid.each do |row|
-      row.each do |tile|
-        return false unless tile.revealed || tile.is_bomb?
-      end
+    grid.flatten.each do |tile|
+      return false unless tile.revealed || tile.is_bomb?
     end
     true
-  end
-
-  def render
-    grid.each_with_index do |row, i|
-      puts row.join("")
-    end
   end
 
   def public_grid
@@ -126,5 +100,4 @@ class Board
       row.map(&:to_symbol)
     end
   end
-
 end
