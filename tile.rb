@@ -29,6 +29,17 @@ class Tile
     SYMBOL_TO_TEXT[symbol]
   end
 
+  # Populates grid with tiles, n_bombs of which are bombs.
+  def self.populate(grid, n_bombs=nil)
+    n_bombs ||= grid.flatten.length/8
+    bomb_locs = [false] * grid.flatten.length
+    n_bombs.times { |i| bomb_locs[i] = true }
+    bomb_locs.shuffle!
+    grid.each do |row|
+      row.length.times { |i| row[i] = Tile.new(bomb_locs.pop)}
+    end
+  end
+
   def reveal
     @revealed = true
     unflag

@@ -27,6 +27,10 @@ class Player
   def get_move(board)
 
   end
+
+  def valid_pos?(grid, x, y)
+    (0...grid.length).include?(x) && (0...grid[0].length).include?(y)
+  end
 end
 
 class HumanPlayer < Player
@@ -52,12 +56,12 @@ class CursorPlayer < Player
   attr_reader :cursor_pos, :input
 
   def initialize(name=nil)
-    @name = name.nil? ? "Outis" : name
+    super
     @input = Interaction.new
     @cursor_pos = [0,0]
   end
 
-  def get_move(grid)
+  def  get_move(grid)
     render(grid)
     input.loop do |key|
       case key.to_s
@@ -83,13 +87,8 @@ class CursorPlayer < Player
   def move_cursor(grid, direction)
     dx, dy = DIRECTIONS[direction]
     x, y = cursor_pos
-    new_x = x + dx
-    new_x = 0 if new_x < 0
-    new_x = grid.length - 1 if new_x >= grid.length
-    new_y = y + dy
-    new_y = 0 if new_y < 0
-    new_y = grid[0].length - 1 if new_y >= grid[0].length
-    @cursor_pos = [new_x, new_y]
+    new_x, new_y = x + dx, y + dy
+    @cursor_pos = [new_x, new_y] if valid_pos?(grid, new_x, new_y)
   end
 
   def render(grid)
@@ -117,7 +116,7 @@ class ComputerPlayer < Player
           ]
 
   def initialize(name=nil)
-    @name = name.nil? ? "Outis" : name
+    super
     @move_stack = []
   end
 
@@ -126,10 +125,6 @@ class ComputerPlayer < Player
     return @move_stack.pop unless @move_stack.empty?
     generate_moves(grid)
     @move_stack.pop
-  end
-
-  def valid_pos?(grid, x, y)
-    (0...grid.length).include?(x) && (0...grid[0].length).include?(y)
   end
 
   def get_neighbors(grid, x, y)
