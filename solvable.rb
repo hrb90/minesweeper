@@ -1,58 +1,48 @@
+require_relative 'sat_solver'
+
 module Solvable
-  DELTAS = [[-1, -1],
-            [-1, 0],
-            [-1, 1],
-            [0, -1],
-            [0, 1],
-            [1, -1],
-            [1, 0],
-            [1, 1]
-          ]
-
-  def get_neighbors(grid, x, y)
-    neighbors_with_pos = []
-    DELTAS.each do |delta_x, delta_y|
-      new_x, new_y = x + delta_x, y + delta_y
-      if valid_pos?(grid, new_x, new_y)
-        neighbors_with_pos << [grid[new_x][new_y], [new_x, new_y]]
-      end
-    end
-    neighbors_with_pos
-  end
-
-  def is_number?(tile)
-    tile.is_a?(Fixnum) && tile > 0
-  end
+  include GridHelper
 
   def generate_basic_moves(grid)
     moves = []
     grid.each_with_index do |row, i|
       row.each_with_index do |tile, j|
-        neighbors = get_neighbors(grid, i, j)
         if is_number?(tile)
-          moves = moves + get_neighbor_moves(tile, neighbors)
+          moves = moves + get_neighbor_moves(grid, i, j)
         end
       end
     end
     moves
   end
 
-  def get_neighbor_moves(tile, neighbors)
+  def get_neighbor_moves(grid, x, y)
     moves = []
-    # if we've found all the bombs we can reveal unrevealed tiles
-    flagged_count = neighbors.count {|v, _| v == :f}
-    unrev_count = neighbors.count {|v, _| v == :f || v == :o}
-    if flagged_count == tile
+    if neighbor_bombs_flagged?(grid, x, y)
       move = :reveal
-    elsif unrev_count == tile
+    elsif all_neighbors_bombs?(grid, x, y)
       move = :flag
     else
       return moves
     end
-    neighbors.each do |v, pos|
+    get_neighbors(grid, x, y).each do |v, pos|
       moves << [pos, move] if v == :o
     end
     moves
+  end
+
+  def generate_sat_moves(grid)
+    moves = []
+    solver = MinesweeperSatSolver.new(grid)
+    grid.each_with_index do |row, i|
+      row.each_with_index do |tile, j|
+        moves << [[i, j], :reveal] unless solver.solve(i, j, true)
+        moves << [[i, j], :flag] unless solver.solve(i, j, false)
+      end
+    end
+    moves.reject do |pos, val|
+      i, j = pos
+      val == :flag && grid[i][j] == :f or val == :reveal && grid[i][j] != :o
+    end
   end
 
   def unrevealed(grid)
@@ -66,7 +56,6 @@ module Solvable
   end
 
   def random_move(grid)
-    debugger
     [[unrevealed(grid).sample, :reveal]]
   end
 end
