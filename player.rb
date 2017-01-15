@@ -1,5 +1,7 @@
 require 'remedy'
+require 'byebug'
 require_relative 'tile'
+require_relative 'solvable'
 
 include Remedy
 
@@ -30,6 +32,13 @@ class Player
 
   def valid_pos?(grid, x, y)
     (0...grid.length).include?(x) && (0...grid[0].length).include?(y)
+  end
+
+  def render(grid)
+    system "clear"
+    grid.map(&:dup).each do |row|
+      puts row.map { |x| Tile.sym_to_txt(x) }.join
+    end
   end
 end
 
@@ -92,28 +101,17 @@ class CursorPlayer < Player
   end
 
   def render(grid)
-    system "clear"
     grid_copy = grid.map(&:dup)
     unless cursor_pos.nil?
       x, y = cursor_pos
       grid_copy[x][y] = :c
     end
-    grid_copy.each do |row|
-      puts row.map { |x| Tile.sym_to_txt(x) }.join
-    end
+    super(grid_copy)
   end
 end
 
 class ComputerPlayer < Player
-  DELTAS = [[-1, -1],
-            [-1, 0],
-            [-1, 1],
-            [0, -1],
-            [0, 1],
-            [1, -1],
-            [1, 0],
-            [1, 1]
-          ]
+  include Solvable
 
   def initialize(name=nil)
     super
@@ -121,52 +119,21 @@ class ComputerPlayer < Player
   end
 
   def get_move(grid)
-    sleep(0.5)
-    return @move_stack.pop unless @move_stack.empty?
-    generate_moves(grid)
+    render(grid)
+    sleep(0.2)
+    add_to_stack(generate_moves(grid)) if @move_stack.empty?
     @move_stack.pop
   end
 
-  def get_neighbors(grid, x, y)
-    neighbors_with_pos = []
-    DELTAS.each do |delta_x, delta_y|
-      new_x, new_y = x + delta_x, y + delta_y
-      if valid_pos?(grid, new_x, new_y)
-        neighbors_with_pos << [grid[new_x][new_y], [new_x, new_y]]
-      end
-    end
-    neighbors_with_pos
-  end
-
-  def add_to_stack(pos, action)
-    @move_stack << [pos, action] unless @move_stack.include?([pos, action])
-  end
-
   def generate_moves(grid)
-    unrevealed = []
-    grid.each_with_index do |row, i|
-      row.each_with_index do |tile, j|
-        neighbors = get_neighbors(grid, i, j)
-        if tile.is_a?(Fixnum) && tile > 0
-          # if we've found all the bombs we can reveal unrevealed tiles
-          flagged_count = neighbors.count {|v, _| v == :f}
-          if flagged_count == tile
-            neighbors.each do |v, pos|
-              add_to_stack(pos, :reveal) if v == :o
-            end
-          end
-          # if there are as many unrevealed neighbors as the value they're all bombs
-          unrev_count = neighbors.count {|v, _| v == :f || v == :o}
-          if unrev_count == tile
-            neighbors.each do |v, pos|
-              add_to_stack(pos, :flag) if v == :o
-            end
-          end
-        end
-        unrevealed << [i, j] if tile == :o
-      end
-    end
+    basic_moves = generate_basic_moves(grid)
+    return basic_moves unless basic_moves.empty?
+    random_move(grid)
+  end
 
-    add_to_stack(unrevealed.sample, :reveal) if @move_stack.empty?
+  def add_to_stack(arr)
+    arr.each do |pos, action|
+      @move_stack << [pos, action] unless @move_stack.include?([pos, action])
+    end
   end
 end
