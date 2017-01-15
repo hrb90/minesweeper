@@ -1,8 +1,6 @@
 require_relative 'tile'
 
 class Board
-  attr_reader :grid, :rows, :cols
-
   def initialize(rows = 9, cols = 9)
     @rows =rows
     @cols = cols
@@ -76,18 +74,6 @@ class Board
     (0...rows).include?(x) && (0...cols).include?(y)
   end
 
-  def get_neighbors(pos)
-    x,y = pos
-    neighbors = []
-    [-1,0,1].each do |x_off|
-      [-1,0,1].each do |y_off|
-        new_pos = [x + x_off, y + y_off]
-        neighbors << new_pos if valid_pos?(new_pos) && pos != new_pos
-      end
-    end
-    neighbors
-  end
-
   def won?
     grid.flatten.each do |tile|
       return false unless tile.revealed || tile.is_bomb?
@@ -99,5 +85,21 @@ class Board
     grid.map do |row|
       row.map(&:to_symbol)
     end
+  end
+
+  private
+
+  attr_reader :grid, :rows, :cols
+
+  def get_neighbors(pos)
+    x,y = pos
+    neighbors = []
+    [-1,0,1].each do |x_off|
+      [-1,0,1].each do |y_off|
+        new_pos = [x + x_off, y + y_off]
+        neighbors << new_pos if valid_pos?(new_pos) && pos != new_pos
+      end
+    end
+    neighbors
   end
 end

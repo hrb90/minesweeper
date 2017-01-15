@@ -4,10 +4,10 @@ class Tile
   attr_accessor :value, :cursor
   attr_reader :revealed, :flagged
 
-  SYMBOL_TO_TEXT = {:c => " ".colorize(:background => :light_green),
-                    :f => "F".colorize(:light_red),
-                    :o => "*".colorize(:black),
-                    :b => "B".colorize(:black),
+  SYMBOL_TO_TEXT = {:c => " ".colorize(:background => :light_green), #cursor
+                    :f => "F".colorize(:light_red), #flag
+                    :o => "*".colorize(:black), #unrevealed
+                    :b => "B".colorize(:black), #bomb
                     0 => "_".colorize(:white),
                     1 => "1".colorize(:blue),
                     2 => "2".colorize(:green),
@@ -66,6 +66,7 @@ class Tile
   end
 
   def to_symbol
+    # The order of the returns matters!
     return :c if cursor
     return :f if flagged
     return :o unless revealed
