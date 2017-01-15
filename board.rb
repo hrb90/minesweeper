@@ -7,16 +7,6 @@ class Board
     @grid = Array.new(rows) {Array.new(cols)}
   end
 
-  def [](pos)
-    row, col = pos
-    grid[row][col]
-  end
-
-  def []=(pos, val)
-    row, col = pos
-    grid[row][col] = val
-  end
-
   def reveal_bombs
     grid.flatten.each do |tile|
       if tile.is_bomb? && won?
@@ -81,6 +71,7 @@ class Board
     true
   end
 
+  # expo
   def public_grid
     grid.map do |row|
       row.map(&:to_symbol)
@@ -101,5 +92,15 @@ class Board
       end
     end
     neighbors
+  end
+
+  def [](pos)
+    row, col = pos
+    grid[row][col]
+  end
+
+  def []=(pos, val)
+    row, col = pos
+    grid[row][col] = val
   end
 end
