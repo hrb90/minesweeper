@@ -1,4 +1,5 @@
 require_relative 'sat_solver'
+require 'byebug'
 
 module Solvable
   include GridHelper
