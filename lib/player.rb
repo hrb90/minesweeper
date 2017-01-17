@@ -126,10 +126,9 @@ class ComputerPlayer < Player
   end
 
   def generate_moves(grid)
-    # basic_moves = generate_basic_moves(grid)
-    # return basic_moves unless basic_moves.empty?
+    basic_moves = generate_basic_moves(grid)
+    return basic_moves unless basic_moves.empty?
     sat_moves = generate_sat_moves(grid)
-    debugger if grid.flatten.any? { |x| x == 0 }
     return sat_moves unless sat_moves.empty?
     debugger if grid.flatten.any? { |x| x == 0 }
     random_move(grid)

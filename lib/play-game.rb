@@ -1,5 +1,5 @@
 require_relative 'game'
 require_relative 'player'
 
-cp = CursorPlayer.new
+cp = ComputerPlayer.new
 Game.new(cp, [16, 16]).play

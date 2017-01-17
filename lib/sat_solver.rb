@@ -28,7 +28,7 @@ class MinesweeperSatSolver
         if is_number?(tile) && !all_neighbors_bombs?(grid, i, j)
           neighbors = get_neighbors(grid, i, j)
           num_flags = neighbors.count { |v, _| v == :f }
-          neighbor_vars = neighbors.reject { |v, _| v == :f }.map do |_, pos|
+          neighbor_vars = neighbors.select { |v, _| v == :o }.map do |_, pos|
             x, y = pos
             @grid_vars[x][y]
           end
