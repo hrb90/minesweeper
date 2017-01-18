@@ -26,27 +26,32 @@ class MinesweeperSatSolver
     grid.each_with_index do |row, i|
       row.each_with_index do |tile, j|
         if is_number?(tile)
-          neighbors = get_neighbors(grid, i, j)
-          if all_neighbors_bombs?(grid, i, j)
-            neighbors.each do |v, pos|
-              next unless v == :o
-              x,y = pos
-              @solver << [@grid_vars[x][y]]
-            end
-          else
-            num_flags = neighbors.count { |v, _| v == :f }
-            neighbor_vars = neighbors.select { |v, _| v == :o }.map do |_, pos|
-              x, y = pos
-              @grid_vars[x][y]
-            end
-            add_to_solver(neighbor_vars, tile - num_flags)
-          end
+          add_to_solver(grid, i, j)
         end
       end
     end
   end
 
-  def add_to_solver(vars, num_bombs)
+  def add_to_solver(grid, i, j)
+    neighbors = get_neighbors(grid, i, j)
+    if all_neighbors_bombs?(grid, i, j)
+      neighbors.each do |v, pos|
+        next unless v == :o
+        x,y = pos
+        @solver << [@grid_vars[x][y]]
+      end
+    else
+      num_flags = neighbors.count { |v, _| v == :f }
+      neighbor_vars = neighbors.select { |v, _| v == :o }.map do |_, pos|
+        x, y = pos
+        @grid_vars[x][y]
+      end
+      add_exact_constraint(neighbor_vars, grid[i][j] - num_flags)
+    end
+  end
+
+  # Adds the constraint to the solver that exactly num_bombs of vars must be true
+  def add_exact_constraint(vars, num_bombs)
     # every combination of vars.length - num_bombs + 1 vars has a bomb
     vars.combination(vars.length - num_bombs + 1).each do |clause_vars|
       @solver << clause_vars
