@@ -1,5 +1,6 @@
 require_relative 'board'
 require_relative 'player'
+require_relative 'cursor_player'
 
 class Game
   attr_reader :board
@@ -7,7 +8,7 @@ class Game
   def initialize(player = nil, size = [9,9])
     x, y = size
     @board = Board.new(x, y)
-    @player = player.nil? ? HumanPlayer.new : player
+    @player = player.nil? ? CursorPlayer.new : player
   end
 
   def take_turn
