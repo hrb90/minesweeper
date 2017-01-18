@@ -13,7 +13,7 @@ module Solvable
         end
       end
     end
-    moves
+    moves.uniq
   end
 
   def get_neighbor_moves(grid, x, y)

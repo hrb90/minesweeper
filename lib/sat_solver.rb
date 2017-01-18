@@ -25,14 +25,22 @@ class MinesweeperSatSolver
   def add_constraints_from_grid(grid)
     grid.each_with_index do |row, i|
       row.each_with_index do |tile, j|
-        if is_number?(tile) && !all_neighbors_bombs?(grid, i, j)
+        if is_number?(tile)
           neighbors = get_neighbors(grid, i, j)
-          num_flags = neighbors.count { |v, _| v == :f }
-          neighbor_vars = neighbors.select { |v, _| v == :o }.map do |_, pos|
-            x, y = pos
-            @grid_vars[x][y]
+          if all_neighbors_bombs?(grid, i, j)
+            neighbors.each do |v, pos|
+              next unless v == :o
+              x,y = pos
+              @solver << [@grid_vars[x][y]]
+            end
+          else
+            num_flags = neighbors.count { |v, _| v == :f }
+            neighbor_vars = neighbors.select { |v, _| v == :o }.map do |_, pos|
+              x, y = pos
+              @grid_vars[x][y]
+            end
+            add_to_solver(neighbor_vars, tile - num_flags)
           end
-          add_to_solver(neighbor_vars, tile - num_flags)
         end
       end
     end
