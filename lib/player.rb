@@ -130,7 +130,6 @@ class ComputerPlayer < Player
     return basic_moves unless basic_moves.empty?
     sat_moves = generate_sat_moves(grid)
     return sat_moves unless sat_moves.empty?
-    debugger if grid.flatten.any? { |x| x == 0 }
     random_move(grid)
   end
 
