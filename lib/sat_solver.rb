@@ -20,6 +20,10 @@ class MinesweeperSatSolver
     @solver.solve(var)
   end
 
+  def get_solution_value(i, j)
+    @grid_vars[i][j]
+  end
+
   private
 
   def add_constraints_from_grid(grid)

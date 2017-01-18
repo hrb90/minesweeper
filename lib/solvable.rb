@@ -46,6 +46,7 @@ module Solvable
     end
   end
 
+
   def unrevealed(grid)
     unrev = []
     grid.each_with_index do |row, i|
