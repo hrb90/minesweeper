@@ -21,7 +21,7 @@ class MinesweeperSatSolver
   end
 
   def get_solution_value(i, j)
-    @grid_vars[i][j]
+    @solver[@grid_vars[i][j]]
   end
 
   private
