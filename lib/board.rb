@@ -1,9 +1,13 @@
 require_relative 'tile'
 
 class Board
-  def initialize(rows = 9, cols = 9)
-    @rows =rows
+  attr_reader :num_bombs
+
+  def initialize(rows = 9, cols = 9, num_bombs = nil)
+    @rows = rows
     @cols = cols
+    num_bombs ||= get_num_bombs
+    @num_bombs = num_bombs
     @grid = Array.new(rows) {Array.new(cols)}
   end
 
@@ -30,11 +34,13 @@ class Board
 
   def flag(pos)
     self[pos].flag
+    @num_bombs += 1
     false
   end
 
   def unflag(pos)
     self[pos].unflag
+    @num_bombs -= 1
     false
   end
 
@@ -44,7 +50,7 @@ class Board
   end
 
   def populate_bombs
-    Tile.populate(grid)
+    Tile.populate(grid, num_bombs)
   end
 
   def populate_counts
@@ -102,5 +108,9 @@ class Board
   def []=(pos, val)
     row, col = pos
     grid[row][col] = val
+  end
+
+  def get_num_bombs
+    rows * cols / 8
   end
 end
